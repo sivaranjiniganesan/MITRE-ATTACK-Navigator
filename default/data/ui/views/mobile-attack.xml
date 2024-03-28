@@ -1,0 +1,78 @@
+<dashboard version="1.1" theme="light" script="mitre_refresh.js" stylesheet="mitre_refresh.css">
+  <label>Mobile Attack Navigator</label>
+  <row id="refresh_id">
+    <panel>
+      <html>
+    <div id="cover-spin"/>
+       <a class="refresh">Refresh</a>
+       
+     </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Total Tactics</title>
+      <single>
+        <search>
+          <query>|inputlookup mobile-attack.csv|rename "kill chain phases" as "Tactics" |stats dc(Tactics) as Tactics</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Total Technique</title>
+      <single>
+        <search>
+          <query>|inputlookup mobile-attack.csv|rename "name" as "Technique" |stats dc(Technique) as Technique</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Technique Count by Tactics</title>
+      <table>
+        <search>
+          <query>|inputlookup mobile-attack.csv |rename name as Technique |stats dc(Technique) as "Technique Count" by "kill chain phases" |sort - "Technique Count"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Platform vs Tactics</title>
+      <table>
+        <search>
+          <query>|inputlookup mobile-attack.csv|rename "kill chain phases" as "Tactics" |table Tactics platforms |makemv delim="," platforms |eval platforms = trim(platforms) |mvexpand platforms |stats values(Tactics) as Tactics by platforms</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>
