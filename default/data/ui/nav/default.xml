@@ -1,5 +1,6 @@
 <nav search_view="search">
-<view name="enterprise-attack" default='true'/>
+<view name="summary_view" default='true'/>
+<view name="enterprise-attack" />
   <view name="ics-attack" />
   <view name="mobile-attack" />
   <view name="dashboards" />

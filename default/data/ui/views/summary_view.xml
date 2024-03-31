@@ -1,0 +1,52 @@
+<form version="1.1" theme="light" stylesheet="mitre_refresh.css">
+  <label>Summary View</label>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="type">
+      <label>Type</label>
+      <choice value="enterprise-attack">Enterprise Attack</choice>
+      <choice value="mobile-attack">Mobile Attack</choice>
+      <choice value="ics-attack">ICS Attack</choice>
+      <default>enterprise-attack</default>
+      <change>
+        <condition value="ics-attack">
+          <set token="root">DataSource</set>
+          <set token="root_val">data sources</set>
+          <set token="ics_val">|eval DataSource=mvindex(split(DataSource,":"),0)</set>
+        </condition>
+        <condition>
+          <set token="root_val">platforms</set>
+          <set token="root">Platform</set>
+          <set token="ics_val"></set>
+        </condition>
+      </change>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>$type$</title>
+      <viz type="mitre_attack_navigator.tree_layout_chart">
+        <search>
+          <query>|inputlookup $type$.csv|rename "kill chain phases" as "Tactics" "$root_val$" as $root$ |search  $root$ != ""| table Tactics name  $root$ $ics_val$|rename name as Technique |makemv delim="," $root$ |eval $root$ = trim($root$) |mvexpand $root$ |makemv delim="," Tactics |eval Tactics = trim(Tactics) |mvexpand Tactics |eval res = "$root$"."||".$root$."||".Tactics."||".Technique |table res</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="mitre_attack_navigator.tree_layout_chart.background">color</option>
+        <option name="mitre_attack_navigator.tree_layout_chart.background_color">#aad7c6</option>
+        <option name="mitre_attack_navigator.tree_layout_chart.background_url">https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQ37vpJNfOcxtO39i0gfBIQ9pI_WaVkqshWc8Shttl6iMts_MJA</option>
+        <option name="mitre_attack_navigator.tree_layout_chart.height">500</option>
+        <option name="mitre_attack_navigator.tree_layout_chart.htext_color">#118832</option>
+        <option name="mitre_attack_navigator.tree_layout_chart.link_color">#000</option>
+        <option name="mitre_attack_navigator.tree_layout_chart.linklength">15,25,35,45,55</option>
+        <option name="mitre_attack_navigator.tree_layout_chart.node_color">#71d0ad</option>
+        <option name="mitre_attack_navigator.tree_layout_chart.text_color">#000</option>
+        <option name="mitre_attack_navigator.tree_layout_chart.width">1700</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+</form>

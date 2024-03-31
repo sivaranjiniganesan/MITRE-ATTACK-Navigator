@@ -14,12 +14,15 @@
       <title>Total Tactics</title>
       <single>
         <search>
-          <query>|inputlookup enterprise-attack.csv|rename "kill chain phases" as "Tactics" |stats dc(Tactics) as Tactics</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <query>|inputlookup enterprise-attack.csv|rename "kill chain phases" as "Tactics" | makemv delim="," Tactics 
+| eval Tactics = trim(Tactics) 
+| mvexpand Tactics |stats dc(Tactics) as Tactics</query>
+          <earliest>0</earliest>
+          <latest></latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
       </single>
     </panel>
     <panel>
@@ -27,11 +30,12 @@
       <single>
         <search>
           <query>|inputlookup enterprise-attack.csv|rename "name" as "Technique" |stats dc(Technique) as Technique</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>0</earliest>
+          <latest></latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
       </single>
     </panel>
   </row>
@@ -40,15 +44,21 @@
       <title>Technique Count by Tactics</title>
       <table>
         <search>
-          <query>|inputlookup enterprise-attack.csv |rename name as Technique |stats dc(Technique) as "Technique Count" by "kill chain phases" |sort - "Technique Count"</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <query>|inputlookup enterprise-attack.csv | rename name as Technique "kill chain phases" as Tactics 
+| makemv delim="," Tactics 
+| eval Tactics = trim(Tactics) 
+| mvexpand Tactics 
+| stats dc(Technique) as "Technique Count" by Tactics 
+| sort - "Technique Count"</query>
+          <earliest>0</earliest>
+          <latest></latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">20</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
@@ -60,15 +70,18 @@
       <title>Platform vs Tactics</title>
       <table>
         <search>
-          <query>|inputlookup enterprise-attack.csv|rename "kill chain phases" as "Tactics" |table Tactics platforms |makemv delim="," platforms |eval platforms = trim(platforms) |mvexpand platforms |stats values(Tactics) as Tactics by platforms</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <query>|inputlookup enterprise-attack.csv|rename "kill chain phases" as "Tactics" |table Tactics platforms | makemv delim="," Tactics 
+| eval Tactics = trim(Tactics) 
+| mvexpand Tactics  |makemv delim="," platforms |eval platforms = trim(platforms) |mvexpand platforms |stats values(Tactics) as Tactics by platforms</query>
+          <earliest>0</earliest>
+          <latest></latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">5</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
@@ -80,15 +93,18 @@
       <title>Tactics Vs Data Source</title>
       <table>
         <search>
-          <query>|inputlookup enterprise-attack.csv|rename "kill chain phases" as "Tactics" "data sources" as data_source|table Tactics data_source |makemv delim="," data_source |eval data_source = trim(data_source) |stats values(data_source) as "Data Source" by Tactics</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <query>|inputlookup enterprise-attack.csv|rename "kill chain phases" as "Tactics" "data sources" as data_source|table Tactics data_source | makemv delim="," Tactics 
+| eval Tactics = trim(Tactics) 
+| mvexpand Tactics |makemv delim="," data_source |eval data_source = trim(data_source) |stats values(data_source) as "Data Source" by Tactics</query>
+          <earliest>0</earliest>
+          <latest></latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">5</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
